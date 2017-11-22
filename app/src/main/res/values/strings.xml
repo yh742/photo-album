@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">FireBase Photo</string>
+    <string name="welcome_text">Welcome!</string>
+    <string name="signin_text">Login with Email</string>
+    <string name="guest_text">Login as Guest</string>
+    <string name="empty_text">Type name here &#8230;</string>
+    <string name="brow_button">Browse</string>
+    <string name="upl_button">Upload</string>
+    <string name="priv_chk">Private</string>
+    <string name="pic_button">Browse and Search for Pictures</string>
+    <string name="uping_txt">Upload Image &#8230;</string>
+    <string name="uping_err">Upload Error!</string>
+</resources>
+
