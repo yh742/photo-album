@@ -8,6 +8,7 @@
     <string name="upl_button">Upload</string>
     <string name="priv_chk">Private</string>
     <string name="pic_button">Browse and Search for Pictures</string>
+    <string name="pic_button2">Browse Processed Images</string>
     <string name="uping_txt">Upload Image &#8230;</string>
     <string name="uping_err">Upload Error!</string>
     <string name="search_title">Search</string>

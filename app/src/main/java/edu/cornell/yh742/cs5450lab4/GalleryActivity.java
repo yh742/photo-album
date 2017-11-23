@@ -40,6 +40,7 @@ public class GalleryActivity extends AppCompatActivity {
 
     private static final String TAG = GalleryActivity.class.getSimpleName();
     private static final String DB_PATH = "imgdb";
+    private static final String PS_PATH = "psdb";
     private DatabaseReference mDbRef;
     private Map<ImageData, String> mPicList;
 
@@ -52,7 +53,15 @@ public class GalleryActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(layoutManager);
 
-        mDbRef = FirebaseDatabase.getInstance().getReference(DB_PATH);
+        // check if gallery is used for processed images or not
+        final boolean processed = getIntent().getBooleanExtra("processed", false);
+        if (processed){
+            mDbRef = FirebaseDatabase.getInstance().getReference(PS_PATH);
+        }
+        else{
+            mDbRef = FirebaseDatabase.getInstance().getReference(DB_PATH);
+        }
+
         final ProgressDialog progress = new ProgressDialog(this);
         progress.setMessage("Loading images...");
         progress.show();
@@ -60,6 +69,7 @@ public class GalleryActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 progress.dismiss();
+                int index = 0;
                 FirebaseAuth auth = FirebaseAuth.getInstance();
                 mPicList = new LinkedHashMap<ImageData, String>();
                 String searchTerm = getIntent().getStringExtra("searchTerm");
@@ -68,7 +78,15 @@ public class GalleryActivity extends AppCompatActivity {
                     for (DataSnapshot snapshot : snapshots.getChildren()){
                         Log.d(TAG, snapshot.getKey());
                         Log.d(TAG, snapshot.getValue().toString());
-                        ImageData data = snapshot.getValue(ImageData.class);
+                        ImageData data;
+                        if (processed){
+                            String url = snapshot.child("url").getValue(String.class);
+                            data = new ImageData(url, "processed" + index);
+                            index++;
+                        }
+                        else{
+                            data = snapshot.getValue(ImageData.class);
+                        }
                         if (searchTerm != null && !data.description.equals(searchTerm)) {
                             continue;
                         }

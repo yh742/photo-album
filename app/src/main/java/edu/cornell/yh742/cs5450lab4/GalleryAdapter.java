@@ -3,6 +3,7 @@ package edu.cornell.yh742.cs5450lab4;
 import android.content.Context;
 import android.media.Image;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -59,6 +60,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryV
 
         holder.mDescValue.setText(data.description);
         holder.mTypeValue.setText(security);
+        Log.d("Adapter", "Image URL: " + data.getUrl().toString());
         Glide.with(mContext)
                 .load(data.getUrl())
                 .placeholder(R.drawable.ic_action_name)
