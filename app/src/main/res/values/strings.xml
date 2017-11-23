@@ -10,5 +10,10 @@
     <string name="pic_button">Browse and Search for Pictures</string>
     <string name="uping_txt">Upload Image &#8230;</string>
     <string name="uping_err">Upload Error!</string>
+    <string name="search_title">Search</string>
+    <string name="search_hint">Image Description</string>
+    <string name="desc_txt">Description: </string>
+    <string name="type_txt">Type: </string>
+    <string name="signout_txt">Sign Out</string>
 </resources>
 

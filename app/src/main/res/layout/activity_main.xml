@@ -15,8 +15,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="170sp"
-        android:text="@string/welcome_text"
         android:textAlignment="center"
+        android:text="@string/welcome_text"
         android:textSize="30sp"
         android:textStyle="bold"/>
 
@@ -37,6 +37,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/guest_text"/>
+
+        <Button
+            android:id="@+id/signout_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/signout_txt"/>
     </LinearLayout>
 
 </LinearLayout>

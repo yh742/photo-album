@@ -1,12 +1,16 @@
 package edu.cornell.yh742.cs5450lab4;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
+import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -43,7 +47,6 @@ public class MenuActivity extends AppCompatActivity {
     private Button mUpload;
     private Button mPictures;
     private CheckBox mPrivCheck;
-    private EditText mTextLine;
     private ImageView mImageView;
 
     private static final int PICK_PHOTO = 200;
@@ -67,7 +70,6 @@ public class MenuActivity extends AppCompatActivity {
         mUpload = (Button)findViewById(R.id.upload_button);
         mPictures = (Button)findViewById(R.id.search_b_button);
         mPrivCheck = (CheckBox)findViewById(R.id.checkBox);
-        mTextLine = (EditText)findViewById(R.id.editText);
         mImageView = (ImageView)findViewById(R.id.imageView);
 
         // user is not signed in
@@ -92,73 +94,92 @@ public class MenuActivity extends AppCompatActivity {
         mUpload.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                uploadHandler();
+                if (mFilePath != null){
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MenuActivity.this);
+                    builder.setTitle("Enter Image Description");
+                    final EditText input = new EditText(MenuActivity.this);
+                    input.setInputType(InputType.TYPE_CLASS_TEXT);
+                    builder.setView(input);
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            uploadHandler(input.getText().toString());
+                        }
+                    });
+                    builder.show();
+                }
+                else {
+                    Toast.makeText(getApplicationContext(), R.string.uping_err, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        // this should start the gallery intent
+        mPictures.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MenuActivity.this, GalleryActivity.class);
+                startActivity(intent);
             }
         });
     }
 
-    private void uploadHandler(){
-        if (mFilePath != null){
-            // show progress dialog while uploading
-            final ProgressDialog progressDialog = new ProgressDialog(this);
-            progressDialog.setTitle(R.string.uping_txt);
-            progressDialog.show();
+    private void uploadHandler(String description) {
+        // show progress dialog while uploading
+        final ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setTitle(R.string.uping_txt);
+        progressDialog.show();
 
-            // setup metadata for the image
-            String userName = mAuth.getCurrentUser() == null ? "anon" :
-                    mAuth.getCurrentUser().toString();
-            final String secureLevel = mPrivCheck.isChecked() ? "private" : "public";
-            final String desText = mTextLine.getText() == null ? "empty" : mTextLine.getText().toString();
+        // setup metadata for the image
+        String userName = mAuth.getCurrentUser() == null ? "anon" :
+                mAuth.getCurrentUser().toString();
+        final String secureLevel = mPrivCheck.isChecked() ? "private" : "public";
+        final String desText = description == null ? "" : description;
 
-            // create metadata
-            StorageMetadata imageMetaData = new StorageMetadata.Builder()
-                    .setCustomMetadata("User", userName)
-                    .setCustomMetadata("Security", secureLevel)
-                    .setCustomMetadata("Uri", mFilePath.toString())
-                    .setCustomMetadata("Description", desText)
-                    .build();
+        // create metadata
+        StorageMetadata imageMetaData = new StorageMetadata.Builder()
+                .setCustomMetadata("User", userName)
+                .setCustomMetadata("Security", secureLevel)
+                .setCustomMetadata("Uri", mFilePath.toString())
+                .setCustomMetadata("Description", desText)
+                .build();
 
-            String storagePath = "";
-            String timeStamp = new SimpleDateFormat("yy_MM_dd_HH_mm_ss").format(new Date());
-            if (!mPrivCheck.isChecked()) {
-                storagePath = "images/" + timeStamp +
-                        mFilePath.toString().substring(mFilePath.toString().lastIndexOf("/") + 1);
-            }
-            else {
-                storagePath = "private_images/" + timeStamp +
-                        mFilePath.toString().substring(mFilePath.toString().lastIndexOf("/") + 1);
-            }
-            StorageReference reference = mStorageRef.child(storagePath);
-            reference.putFile(mFilePath, imageMetaData)
-                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            progressDialog.dismiss();
-                            Toast.makeText(getApplicationContext(), "Image Uploaded", Toast.LENGTH_LONG).show();
-                            String primeKey = mDbRef.push().getKey();
-                            mDbRef.child(secureLevel).child(primeKey).setValue(
-                                    new ImageData(taskSnapshot.getDownloadUrl().toString(), desText));
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            progressDialog.dismiss();
-                            Toast.makeText(getApplicationContext(), "You don't have permission to upload.", Toast.LENGTH_LONG).show();
-                            Log.e(TAG, e.getMessage());
-                        }
-                    })
-                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                            int progress = (int)(100 * taskSnapshot.getBytesTransferred() / taskSnapshot.getTotalByteCount());
-                            progressDialog.setMessage(progress + "%");
-                        }
-                    });
+        String storagePath = "";
+        String timeStamp = new SimpleDateFormat("yy_MM_dd_HH_mm_ss").format(new Date());
+        if (!mPrivCheck.isChecked()) {
+            storagePath = "images/" + timeStamp +
+                    mFilePath.toString().substring(mFilePath.toString().lastIndexOf("/") + 1);
+        } else {
+            storagePath = "private_images/" + timeStamp +
+                    mFilePath.toString().substring(mFilePath.toString().lastIndexOf("/") + 1);
         }
-        else {
-            Toast.makeText(getApplicationContext(), R.string.uping_err, Toast.LENGTH_SHORT).show();
-        }
+        StorageReference reference = mStorageRef.child(storagePath);
+        reference.putFile(mFilePath, imageMetaData)
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        progressDialog.dismiss();
+                        Toast.makeText(getApplicationContext(), "Image Uploaded", Toast.LENGTH_LONG).show();
+                        String primeKey = mDbRef.push().getKey();
+                        mDbRef.child(secureLevel).child(primeKey).setValue(
+                                new ImageData(taskSnapshot.getDownloadUrl().toString(), desText));
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        progressDialog.dismiss();
+                        Toast.makeText(getApplicationContext(), "You don't have permission to upload.", Toast.LENGTH_LONG).show();
+                        Log.e(TAG, e.getMessage());
+                    }
+                })
+                .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                        int progress = (int) (100 * taskSnapshot.getBytesTransferred() / taskSnapshot.getTotalByteCount());
+                        progressDialog.setMessage(progress + "%");
+                    }
+                });
     }
 
     @Override

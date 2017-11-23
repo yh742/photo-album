@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
+
 import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.auth.FirebaseAuth;
 import java.util.Arrays;
@@ -18,6 +20,8 @@ public class MainActivity extends AppCompatActivity {
     private static final String PATH_TOS = "";
     private Button mLoginButton;
     private Button mLoginGuest;
+    private Button mSignOut;
+    private TextView mWelcomeText;
     private FirebaseAuth mAuth;
     private static final int RC_SIGN_IN = 200;
 
@@ -27,9 +31,23 @@ public class MainActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         setContentView(R.layout.activity_main);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        AuthUI.getInstance().signOut(MainActivity.this);
+        mWelcomeText = (TextView) findViewById(R.id.welcome);
         mLoginButton = (Button) findViewById(R.id.signin_button);
         mLoginGuest = (Button) findViewById(R.id.guest_button);
+        mSignOut = (Button) findViewById(R.id.signout_button);
+        mSignOut.setEnabled(false);
+        if (mAuth.getCurrentUser() != null) {
+            mSignOut.setEnabled(true);
+        }
+
+        mSignOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mAuth.signOut();
+                mSignOut.setEnabled(false);
+            }
+        });
+
         mLoginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -39,12 +57,14 @@ public class MainActivity extends AppCompatActivity {
                         .setProviders(Arrays.asList(
                                 new AuthUI.IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build()))
                         .build(), RC_SIGN_IN);
+
             }
         });
 
         mLoginGuest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mAuth.signOut();
                 Intent intent = new Intent(MainActivity.this, MenuActivity.class);
                 startActivity(intent);
             }
@@ -56,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == RC_SIGN_IN){
             if(resultCode == RESULT_OK){
+                mSignOut.setEnabled(true);
                 Intent intent = new Intent(MainActivity.this, MenuActivity.class);
                 startActivity(intent);
             }

@@ -5,11 +5,29 @@ package edu.cornell.yh742.cs5450lab4;
  */
 
 public class ImageData {
-    public String Url;
-    public String Description;
+    public String url;
+    public String description;
+
+    public String getUrl(){
+        return url;
+    }
+
+    public void setUrl(String url){
+        this.url = url;
+    }
+
+    public String getDescription(){
+        return description;
+    }
+
+    public void setDescription(String description){
+        this.description = description;
+    }
 
     public ImageData(String url, String description){
-        this.Url = url;
-        this.Description = description;
+        this.url = url;
+        this.description = description;
     }
+
+    public ImageData(){}
 }
