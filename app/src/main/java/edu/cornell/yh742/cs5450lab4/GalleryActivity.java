@@ -55,6 +55,7 @@ public class GalleryActivity extends AppCompatActivity {
 
         // check if gallery is used for processed images or not
         final boolean processed = getIntent().getBooleanExtra("processed", false);
+        // db root is different for processed vs regular images
         if (processed){
             mDbRef = FirebaseDatabase.getInstance().getReference(PS_PATH);
         }
@@ -62,9 +63,12 @@ public class GalleryActivity extends AppCompatActivity {
             mDbRef = FirebaseDatabase.getInstance().getReference(DB_PATH);
         }
 
+        // show progress dialog
         final ProgressDialog progress = new ProgressDialog(this);
         progress.setMessage("Loading images...");
         progress.show();
+
+        // this will only fire once
         mDbRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -72,24 +76,32 @@ public class GalleryActivity extends AppCompatActivity {
                 int index = 0;
                 FirebaseAuth auth = FirebaseAuth.getInstance();
                 mPicList = new LinkedHashMap<ImageData, String>();
+
+                // if intent has search associated only lookup pictures with the same description
                 String searchTerm = getIntent().getStringExtra("searchTerm");
+
+                // iterate through the database to store URI
                 for (DataSnapshot snapshots : dataSnapshot.getChildren()){
                     Log.d(TAG, snapshots.getKey());
                     for (DataSnapshot snapshot : snapshots.getChildren()){
                         Log.d(TAG, snapshot.getKey());
                         Log.d(TAG, snapshot.getValue().toString());
                         ImageData data;
+                        // if it is processed store only URI
                         if (processed){
                             String url = snapshot.child("url").getValue(String.class);
                             data = new ImageData(url, "processed" + index);
                             index++;
                         }
+                        // if it is not process deserialize into ImageData
                         else{
                             data = snapshot.getValue(ImageData.class);
                         }
                         if (searchTerm != null && !data.description.equals(searchTerm)) {
                             continue;
                         }
+
+                        // make sure we differentiate public and private pictures for security
                         if (snapshots.getKey().toString().equals("private")) {
                             if (auth.getCurrentUser() != null) {
                                 mPicList.put(data, "private");
@@ -112,8 +124,10 @@ public class GalleryActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
+
         // Inflate menu to add items to action bar if it is present.
         inflater.inflate(R.menu.options_menu, menu);
+
         // Associate searchable configuration with the SearchView
         SearchManager searchManager =
                 (SearchManager) getSystemService(Context.SEARCH_SERVICE);
@@ -122,6 +136,7 @@ public class GalleryActivity extends AppCompatActivity {
         searchView.setSearchableInfo(
                 searchManager.getSearchableInfo(getComponentName()));
 
+        // this will fire when the search starts
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener(){
             @Override
             public boolean onQueryTextChange(String newText) {
@@ -133,6 +148,7 @@ public class GalleryActivity extends AppCompatActivity {
             public boolean onQueryTextSubmit(String s){
                 Log.d(TAG, "Clicked on search icon");
                 Log.d(TAG, searchView.getQuery().toString());
+                // need to finish current activity, and restart gallery with search pics only
                 finish();
                 Intent intent = getIntent();
                 intent.putExtra("searchTerm", searchView.getQuery().toString());

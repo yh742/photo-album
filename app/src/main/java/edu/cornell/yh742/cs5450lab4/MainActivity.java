@@ -28,20 +28,27 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mAuth = FirebaseAuth.getInstance();
         setContentView(R.layout.activity_main);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+        // get security authentication instance
+        mAuth = FirebaseAuth.getInstance();
+
+        // get UI components
         mWelcomeText = (TextView) findViewById(R.id.welcome);
         mLoginButton = (Button) findViewById(R.id.signin_button);
         mLoginGuest = (Button) findViewById(R.id.guest_button);
         mSignOut = (Button) findViewById(R.id.signout_button);
         mSignOut.setEnabled(false);
+
+        // if the user is signed in already
         if (mAuth.getCurrentUser() != null) {
             mWelcomeText.setText("Welcome! " + mAuth.getCurrentUser().getEmail());
             mLoginButton.setText("Login With Another Account");
             mSignOut.setEnabled(true);
         }
 
+        // sign out the user
         mSignOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -52,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // launches Firebase UI authentication
         mLoginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -70,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // launches Guest login authentication
         mLoginGuest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -80,14 +89,17 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    // when guest login is finished, this even will fire
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == RC_SIGN_IN){
             if(resultCode == RESULT_OK){
+                // display user name
                 mWelcomeText.setText("Welcome! " + mAuth.getCurrentUser().getEmail());
                 mLoginButton.setText("Sign In With Another Account");
                 mSignOut.setEnabled(true);
+                // go back to main menu
                 finish();
                 Intent intent = new Intent(MainActivity.this, MenuActivity.class);
                 startActivity(intent);

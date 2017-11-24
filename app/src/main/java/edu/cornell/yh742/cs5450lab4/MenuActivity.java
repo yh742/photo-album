@@ -75,13 +75,6 @@ public class MenuActivity extends AppCompatActivity {
         mImageView = (ImageView)findViewById(R.id.imageView);
         mProcessed = (Button)findViewById(R.id.search_p_button);
         mAuthButton = (Button)findViewById(R.id.auth_button);
-        // user is not signed in
-        //if (mAuth.getCurrentUser() == null){
-            //mUpload.setEnabled(false);
-            //mPrivCheck.setEnabled(false);
-            //mTextLine.setEnabled(false);
-            //mBrowse.setEnabled(false);
-        //}
 
         // start implicit intent when uploading pictures
         mBrowse.setOnClickListener(new View.OnClickListener(){
@@ -126,6 +119,7 @@ public class MenuActivity extends AppCompatActivity {
             }
         });
 
+        // start gallery, but using processed pictures
         mProcessed.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -135,6 +129,7 @@ public class MenuActivity extends AppCompatActivity {
             }
         });
 
+        // use this button to go back to sign in activity
         mAuthButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -144,6 +139,7 @@ public class MenuActivity extends AppCompatActivity {
         });
     }
 
+    // handle when upload button is clicked
     private void uploadHandler(String description) {
         // show progress dialog while uploading
         final ProgressDialog progressDialog = new ProgressDialog(this);
@@ -166,6 +162,8 @@ public class MenuActivity extends AppCompatActivity {
 
         String storagePath = "";
         String timeStamp = new SimpleDateFormat("yy_MM_dd_HH_mm_ss").format(new Date());
+
+        // determine if the storage is public or private
         if (!mPrivCheck.isChecked()) {
             storagePath = "images/" + timeStamp +
                     mFilePath.toString().substring(mFilePath.toString().lastIndexOf("/") + 1);
@@ -173,6 +171,8 @@ public class MenuActivity extends AppCompatActivity {
             storagePath = "private_images/" + timeStamp +
                     mFilePath.toString().substring(mFilePath.toString().lastIndexOf("/") + 1);
         }
+
+        // handlers for when storage upload completes
         StorageReference reference = mStorageRef.child(storagePath);
         reference.putFile(mFilePath, imageMetaData)
                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -202,6 +202,7 @@ public class MenuActivity extends AppCompatActivity {
                 });
     }
 
+    // handle events after coming back from photo selection
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -211,6 +212,7 @@ public class MenuActivity extends AppCompatActivity {
                 return;
             }
             try {
+                // get file and add to imageview as bitmap
                 mFilePath = data.getData();
                 InputStream inputStream = getApplicationContext().getContentResolver().openInputStream(mFilePath);
                 Bitmap map = BitmapFactory.decodeStream(inputStream);

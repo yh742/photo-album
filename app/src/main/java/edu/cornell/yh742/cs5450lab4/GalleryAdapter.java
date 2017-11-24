@@ -23,6 +23,7 @@ import java.util.Map;
 
 public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryViewHolder> {
 
+    // define a class for each element in the gallery
     public class GalleryViewHolder extends RecyclerView.ViewHolder {
         public ImageView mImageView;
         public TextView mDescValue;
@@ -43,6 +44,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryV
         mImageDataList = (LinkedHashMap)picList;
     }
 
+    // inflate each viewholder onto layout
     @Override
     public GalleryViewHolder onCreateViewHolder(ViewGroup parent, int ViewType){
         Context context = parent.getContext();
@@ -52,6 +54,8 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryV
         return  viewHolder;
     }
 
+    // bind each picture to each holder when scrolling
+    // we use glide here because it helps cache pictures from URI to give smooth experience
     @Override
     public void onBindViewHolder(GalleryViewHolder holder, int position){
         ImageData data = new ArrayList<ImageData>(mImageDataList.keySet()).get(position);
