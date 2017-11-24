@@ -47,6 +47,7 @@ public class MenuActivity extends AppCompatActivity {
     private Button mUpload;
     private Button mPictures;
     private Button mProcessed;
+    private Button mAuthButton;
     private CheckBox mPrivCheck;
     private ImageView mImageView;
 
@@ -73,7 +74,7 @@ public class MenuActivity extends AppCompatActivity {
         mPrivCheck = (CheckBox)findViewById(R.id.checkBox);
         mImageView = (ImageView)findViewById(R.id.imageView);
         mProcessed = (Button)findViewById(R.id.search_p_button);
-
+        mAuthButton = (Button)findViewById(R.id.auth_button);
         // user is not signed in
         //if (mAuth.getCurrentUser() == null){
             //mUpload.setEnabled(false);
@@ -130,6 +131,14 @@ public class MenuActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(MenuActivity.this, GalleryActivity.class);
                 intent.putExtra("processed", true);
+                startActivity(intent);
+            }
+        });
+
+        mAuthButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MenuActivity.this, MainActivity.class);
                 startActivity(intent);
             }
         });

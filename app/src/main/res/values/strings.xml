@@ -16,5 +16,6 @@
     <string name="desc_txt">Description: </string>
     <string name="type_txt">Type: </string>
     <string name="signout_txt">Sign Out</string>
+    <string name="auth_txt">Authentication</string>
 </resources>
 

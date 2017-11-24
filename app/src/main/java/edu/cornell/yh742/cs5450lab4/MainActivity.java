@@ -37,6 +37,8 @@ public class MainActivity extends AppCompatActivity {
         mSignOut = (Button) findViewById(R.id.signout_button);
         mSignOut.setEnabled(false);
         if (mAuth.getCurrentUser() != null) {
+            mWelcomeText.setText("Welcome! " + mAuth.getCurrentUser().getEmail());
+            mLoginButton.setText("Login With Another Account");
             mSignOut.setEnabled(true);
         }
 
@@ -44,6 +46,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 mAuth.signOut();
+                mWelcomeText.setText("Welcome!");
+                mLoginButton.setText(R.string.signin_text);
                 mSignOut.setEnabled(false);
             }
         });
@@ -81,7 +85,10 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == RC_SIGN_IN){
             if(resultCode == RESULT_OK){
+                mWelcomeText.setText("Welcome! " + mAuth.getCurrentUser().getEmail());
+                mLoginButton.setText("Sign In With Another Account");
                 mSignOut.setEnabled(true);
+                finish();
                 Intent intent = new Intent(MainActivity.this, MenuActivity.class);
                 startActivity(intent);
             }
