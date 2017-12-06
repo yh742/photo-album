@@ -6,6 +6,8 @@ TestCase 1: login as guest user and upload picture
 Expected result: upload failure toast messages, guest users can't upload
 
 Steps:
+- User starts application
+- User selects "Authentication" button
 - User selects "LOGIN AS GUEST" button
 - User selects "BROWSE" button
 - User selects photo
@@ -17,6 +19,8 @@ TestCase 2: login as user and upload picture
 Expected result: upload success toast message, actual users can upload
 
 Steps:
+- User starts application
+- User selects "Authentication" button
 - User selects "LOGIN WITH EMAIL" button
 - User types in email "yh742@cornell.edu"
 - User types in password
