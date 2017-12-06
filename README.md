@@ -1,3 +1,7 @@
+Video Demo
+
+The video is hosted at: https://drive.google.com/file/d/1aWh_29O0aEsbICTo4rr_cmdoezAWuTux/view?usp=sharing
+
 TestCases
 
 Although there is implementation of checking toast pop up messages according to online sources, it is not thread safe according to Google. Thus, I will hand write the two test cases regarding security and photo uploads.
