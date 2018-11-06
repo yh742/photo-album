@@ -1,3 +1,9 @@
+# photo-album
+
+## What is this?
+
+An app to upload photos with OAuth authentication. The album can process the image by turning it into x-ray gradiation or by converting the image to ascii.
+
 ## Video Demo
 
 The video is hosted at: https://drive.google.com/file/d/1aWh_29O0aEsbICTo4rr_cmdoezAWuTux/view?usp=sharing
