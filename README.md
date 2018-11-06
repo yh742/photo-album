@@ -6,7 +6,8 @@ An app to upload photos with OAuth authentication. The album can process the ima
 
 ## Video Demo
 
-The video is hosted at: https://drive.google.com/file/d/1aWh_29O0aEsbICTo4rr_cmdoezAWuTux/view?usp=sharing
+<a href="https://youtu.be/hrMo-2LX4NE" target="_blank"><img src="http://img.youtube.com/vi/hrMo-2LX4NE/0.jpg" 
+alt="IMAGE ALT TEXT HERE" width="480" height="360" border="10" /></a>
 
 ## TestCases
 
